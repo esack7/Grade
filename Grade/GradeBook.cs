@@ -1,39 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Grade
 {
-    public class GradeBook
-    {
-        public GradeBook()
-        {
+	public class GradeBook
+	{
+		public GradeBook()
+		{
 			_name = "Empty";
-            grades = new List<float>();
-        }
+			grades = new List<float>();
+		}
 
-        public GradeStatistics ComputeStatistics()
-        {
-            GradeStatistics stats = new GradeStatistics();
+		public GradeStatistics ComputeStatistics()
+		{
+			GradeStatistics stats = new GradeStatistics();
 
-            float sum = 0;
-            foreach (float grade in grades)
-            {
-                stats.HighestGrade = Math.Max(grade, stats.HighestGrade);
-                stats.LowestGrade = Math.Min(grade, stats.LowestGrade);
-                sum += grade;
-            }
-            stats.AverageGrade = sum / grades.Count;
+			float sum = 0;
+			foreach (float grade in grades)
+			{
+				stats.HighestGrade = Math.Max(grade, stats.HighestGrade);
+				stats.LowestGrade = Math.Min(grade, stats.LowestGrade);
+				sum += grade;
+			}
+			stats.AverageGrade = sum / grades.Count;
 
 
-            return stats;
-        }
+			return stats;
+		}
 
-        public void AddGrade(float grade)
-        {
-            grades.Add(grade); 
-        }
+		internal void WriteGrades(TextWriter destination)
+		{
+			for (int i = 0; i < grades.Count; i++)
+			{
+				destination.WriteLine(grades[i]);
+			}
+		}
 
-        public string Name
+		public void AddGrade(float grade)
+		{
+			grades.Add(grade);
+		}
+
+		public string Name
 		{
 			get
 			{
@@ -42,23 +51,26 @@ namespace Grade
 
 			set
 			{
-				if (!String.IsNullOrEmpty(value))
+				if(string.IsNullOrEmpty(value))
 				{
-					if (_name != value)
-					{
-						NameChangedEventArgs args = new NameChangedEventArgs();
-						args.ExistingName = _name;
-						args.NewName = value;
-						
-						NameChanged(this, args);
-					}
-					_name = value;
+					throw new ArgumentException("Name cannot be null or empty");
 				}
+
+				if (_name != value)
+				{
+					NameChangedEventArgs args = new NameChangedEventArgs();
+					args.ExistingName = _name;
+					args.NewName = value;
+
+					NameChanged(this, args);
+				}
+				_name = value;
+
 			}
 		}
 		public event NameChangedDelegate NameChanged;
 
 		private string _name;
-        private List<float> grades; 
-    }
+		private List<float> grades;
+	}
 }
