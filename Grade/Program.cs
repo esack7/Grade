@@ -7,17 +7,27 @@ namespace Grade
     class Program
     {
         static void Main(string[] args)
-		{
-			GradeBook book = new GradeBook();
+        {
+            IGradeTracker book = NewMethod();
 
-			GetBookName(book);
-			AddGrades(book);
-			SaveGrades(book);
-			WriteResults(book);
-		}
+            //GetBookName(book);
+            AddGrades(book);
+            SaveGrades(book);
+            WriteResults(book);
+        }
 
-		private static void WriteResults(GradeBook book)
+        private static GradeTracker NewMethod()
+        {
+            return new ThrowAwayGradeBook();
+        }
+
+        private static void WriteResults(IGradeTracker book)
 		{
+            foreach (float grade in book)
+            {
+                Console.WriteLine(grade);
+            }
+
 			GradeStatistics stats = book.ComputeStatistics();
 			WriteResult("Average grade: ", stats.AverageGrade);
 			WriteResult("Highest grade: ", (int)stats.HighestGrade);
@@ -27,7 +37,7 @@ namespace Grade
 			Console.ReadLine();
 		}
 
-		private static void SaveGrades(GradeBook book)
+		private static void SaveGrades(IGradeTracker book)
 		{
 			using (StreamWriter outputFile = File.CreateText("grades.txt"))
 			{
@@ -35,7 +45,7 @@ namespace Grade
 			}
 		}
 
-		private static void GetBookName(GradeBook book)
+		private static void GetBookName(IGradeTracker book)
 		{
 			try
 			{
@@ -48,7 +58,7 @@ namespace Grade
 			}
 		}
 
-		private static void AddGrades(GradeBook book)
+		private static void AddGrades(IGradeTracker book)
 		{
 			book.AddGrade(91);
 			book.AddGrade(89.5f);
